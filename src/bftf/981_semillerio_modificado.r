@@ -130,7 +130,7 @@ param_ganadores  <- list( "learning_rate"= 0.0256331616260111,
                           "ratio_corte"= 0.0385336379536877,
                           "lambda_l1"= 1.13903425573371,         
                           "lambda_l2"= 191.638560631778,         
-                          "max_bin"= 106,            
+                          "max_bin"= 106            
                         )
 
 #junto ambas listas de parametros en una sola
