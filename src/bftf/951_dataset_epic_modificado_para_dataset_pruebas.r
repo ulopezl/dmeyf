@@ -656,7 +656,7 @@ correr_todo  <- function( palancas )
   vector_azar  <- runif( nrow(dataset) ) ## defino un vector de probas con todo el dataset
   dataset[ ( clase01==1 | vector_azar < ktrain_subsampling ), ] ## recorto el dataset (solo clase continua)
   
-  #Grabo el dataset
+  #Grabo el dataset recortado
   fwrite( dataset,
           paste0( "./datasets/dataset_epic_RECORTADO_", palancas$version, ".csv.gz" ),
           logical01 = TRUE,
