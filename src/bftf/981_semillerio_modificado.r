@@ -190,7 +190,7 @@ for(  semillita  in  ksemillas )   #itero por las semillas
   
   
   pos_corte_kaggle  <- as.integer(param_completo$ratio_corte*nrow(dapply))
-  prob_corte_kaggle <- predsort[ pos_corte_kaggle ]
+  prob_corte_kaggle <- predsort_kaggle[ pos_corte_kaggle ]
   Predicted_kaggle  <- as.integer( prediccion_kaggle > prob_corte_kaggle )
   
   entrega_kaggle  <- as.data.table( list( "numero_de_cliente"= dapply$numero_de_cliente, 
@@ -198,7 +198,7 @@ for(  semillita  in  ksemillas )   #itero por las semillas
   
   
   #genero el archivo para Kaggle
-  fwrite( entrega, 
+  fwrite( entrega_kaggle, 
           file= paste0(kkaggle, "semilla_", semillita, ".csv" ),
           sep= "," )
   
