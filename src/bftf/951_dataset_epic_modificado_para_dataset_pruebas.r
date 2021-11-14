@@ -655,7 +655,7 @@ correr_todo  <- function( palancas )
   ktrain_subsampling = 0.02 ## tamaño de la muestra
   vector_azar  <- runif( nrow(dataset) ) ## defino un vector de probas con todo el dataset
   sample = dataset[ , clase01:= ifelse( clase_ternaria=="CONTINUA", 0, 1 ) ] #creo la clase01
-  sample = dataset[ ( clase01==1 | vector_azar < ktrain_subsampling ), ] ## recorto el dataset (solo clase continua)
+  sample = sample[ ( clase01==1 | vector_azar < ktrain_subsampling ), ] ## recorto el dataset (solo clase continua)
   
   #Grabo el dataset recortado
   fwrite( sample,
