@@ -613,12 +613,10 @@ CanaritosImportancia  <- function( dataset )
 rankear <- function ( variable ) { frank( variable, ties.method='average',  #los empatados tienen un ranking que es el promedio de sus posiciones.
                                          na.last=TRUE) }
 
-## variables sobre las que aplico las transformaciones de ranking
-cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
-
-
 ## función que agrega rankings sin eliminar variables ori
 agregar_ranking  <- function( dataset ) { 
+  ## variables sobre las que aplico las transformaciones de ranking
+  cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
   dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
            .SDcols= cols_analiticas,
            by= c("foto_mes")]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
@@ -631,6 +629,8 @@ agregar_ranking  <- function( dataset ) {
 ## funcion que pasa las variables ori a ranking
 
 pasar_a_ranking  <- function( dataset ) { 
+  ## variables sobre las que aplico las transformaciones de ranking
+    cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
     dataset_ret = dataset[ , (cols_analiticas) := lapply(.SD, rankear), 
              .SDcols = cols_analiticas,
              by = c("foto_mes") ]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
@@ -698,6 +698,18 @@ correr_todo  <- function( palancas )
   #Grabo el dataset
   fwrite( dataset,
           paste0( "./datasets/dataset_epic_", palancas$version, ".csv.gz" ),
+          logical01 = TRUE,
+          sep= "," )
+  
+  #genero dataset para pruebas locales
+  ktrain_subsampling = 0.02 ## tamaño de la muestra
+  vector_azar  <- runif( nrow(dataset) ) ## defino un vector de probas con todo el dataset
+  sample = dataset[ , clase01:= ifelse( clase_ternaria=="CONTINUA", 0, 1 ) ] #creo la clase01
+  sample = sample[ ( clase01==1 | vector_azar < ktrain_subsampling ), ] ## recorto el dataset (solo clase continua)
+  
+  #Grabo el dataset recortado
+  fwrite( sample,
+          paste0( "./datasets/dataset_epic_RECORTADO_", palancas$version, ".csv.gz" ),
           logical01 = TRUE,
           sep= "," )
 
