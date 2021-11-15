@@ -647,8 +647,8 @@ pasar_a_ranking  <- function( dataset ) {
 correr_todo  <- function( palancas )
 {
   #cargo el dataset ORIGINAL
-  #dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
-  dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz")
+  dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+  #dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz")
   
   setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 
@@ -702,7 +702,7 @@ correr_todo  <- function( palancas )
 
   #Grabo el dataset
   fwrite( dataset,
-          paste0( "dmeyf/datasets/dataset_epic_", palancas$version, ".csv.gz" ),
+          paste0( "./datasets/dataset_epic_", palancas$version, ".csv.gz" ),
           logical01 = TRUE,
           sep= "," )
   
@@ -712,7 +712,7 @@ correr_todo  <- function( palancas )
   sample = dataset[ , clase01:= ifelse( clase_ternaria=="CONTINUA", 0, 1 ) ] #creo la clase01
   sample = sample[ ( clase01==1 | vector_azar < ktrain_subsampling ), ] ## recorto el dataset (solo clase continua)
   
-  Grabo el dataset recortado
+ #Grabo el dataset recortado
   fwrite( sample,
           paste0( "./datasets/dataset_epic_RECORTADO_", palancas$version, ".csv.gz" ),
           logical01 = TRUE,
