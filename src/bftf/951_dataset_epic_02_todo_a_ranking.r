@@ -80,7 +80,7 @@ palancas$solorankings <- TRUE
 palancas$oriandrankings <-FALSE
 
 #escribo para saber cuales fueron los parametros
-#write_yaml(  palancas,  paste0( "./work/palanca_",  palancas$version  ,".yaml" ) )
+write_yaml(  palancas,  paste0( "./work/palanca_",  palancas$version  ,".yaml" ) )
 
 #------------------------------------------------------------------------------
 
@@ -615,8 +615,10 @@ rankear <- function ( variable ) { frank( variable, ties.method='average',  #los
 
 ## función que agrega rankings sin eliminar variables ori
 agregar_ranking  <- function( dataset ) { 
+  
   ## variables sobre las que aplico las transformaciones de ranking
   cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+  
   dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
            .SDcols= cols_analiticas,
            by= c("foto_mes")]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
@@ -629,8 +631,10 @@ agregar_ranking  <- function( dataset ) {
 ## funcion que pasa las variables ori a ranking
 
 pasar_a_ranking  <- function( dataset ) { 
+  
   ## variables sobre las que aplico las transformaciones de ranking
     cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+    
     dataset_ret = dataset[ , (cols_analiticas) := lapply(.SD, rankear), 
              .SDcols = cols_analiticas,
              by = c("foto_mes") ]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
@@ -643,8 +647,9 @@ pasar_a_ranking  <- function( dataset ) {
 correr_todo  <- function( palancas )
 {
   #cargo el dataset ORIGINAL
-  dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
-
+  #dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+  dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz")
+  
   setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 
   AgregarMes( dataset )  #agrego el mes del año
@@ -697,7 +702,7 @@ correr_todo  <- function( palancas )
 
   #Grabo el dataset
   fwrite( dataset,
-          paste0( "./datasets/dataset_epic_", palancas$version, ".csv.gz" ),
+          paste0( "dmeyf/datasets/dataset_epic_", palancas$version, ".csv.gz" ),
           logical01 = TRUE,
           sep= "," )
   
@@ -707,7 +712,7 @@ correr_todo  <- function( palancas )
   sample = dataset[ , clase01:= ifelse( clase_ternaria=="CONTINUA", 0, 1 ) ] #creo la clase01
   sample = sample[ ( clase01==1 | vector_azar < ktrain_subsampling ), ] ## recorto el dataset (solo clase continua)
   
-  #Grabo el dataset recortado
+  Grabo el dataset recortado
   fwrite( sample,
           paste0( "./datasets/dataset_epic_RECORTADO_", palancas$version, ".csv.gz" ),
           logical01 = TRUE,
