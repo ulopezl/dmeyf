@@ -34,7 +34,7 @@ setwd( directory.root )
 
 palancas  <- list()  #variable con las palancas para activar/desactivar
 
-palancas$version  <- "v951_exp2_solo_rankings"   #Muy importante, ir cambiando la version
+palancas$version  <- "v951_exp2_ori_y_ranking"   #Muy importante, ir cambiando la version
 
 palancas$variablesdrift  <- c()   #aqui van las columnas que se quieren eliminar
 
@@ -76,8 +76,8 @@ palancas$canaritosimportancia  <- TRUE  #si me quedo solo con lo mas importante 
 
 #### nuevas palancas ranking
 ## INVERTIR PARA HACER LA VERSION CON VARIABLES ORIGINALES
-palancas$solorankings <- TRUE
-palancas$oriandrankings <-FALSE
+palancas$solorankings <- FALSE
+palancas$oriandrankings <-TRUE
 
 #escribo para saber cuales fueron los parametros
 write_yaml(  palancas,  paste0( "./work/palanca_",  palancas$version  ,".yaml" ) )
