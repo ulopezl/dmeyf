@@ -619,9 +619,10 @@ agregar_ranking  <- function( dataset ) {
   ## variables sobre las que aplico las transformaciones de ranking
   cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
   
-  dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
+  dataset_ret = dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
            .SDcols= cols_analiticas,
            by= c("foto_mes")]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
+  return( dataset_ret )
 }
 
 
@@ -687,13 +688,12 @@ correr_todo  <- function( palancas )
   if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
 
   #agrego palancas de ranking
+
   if ( palancas$solorankings ) pasar_a_ranking( dataset )
   if ( palancas$oriandrankings ) agregar_ranking( dataset )
   
   ## por ultimo dejo la canaritos que selecciona las importantes
   if( palancas$canaritosimportancia )  CanaritosImportancia( dataset )
-
-
 
 
   #dejo la clase como ultimo campo
