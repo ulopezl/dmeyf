@@ -40,14 +40,14 @@ palancas$variablesdrift  <- c()   #aqui van las columnas que se quieren eliminar
 
 palancas$corregir <-  TRUE    # TRUE o FALSE
 
-palancas$nuevasvars <-  TRUE  #si quiero hacer Feature Engineering manual
+palancas$nuevasvars <-  FALSE  #si quiero hacer Feature Engineering manual
 
 palancas$dummiesNA  <-  FALSE #La idea de Santiago Dellachiesa
 
-palancas$lag1   <- TRUE    #lag de orden 1
-palancas$delta1 <- TRUE    # campo -  lag de orden 1 
-palancas$lag2   <- TRUE
-palancas$delta2 <- TRUE
+palancas$lag1   <- FALSE    #lag de orden 1
+palancas$delta1 <- FALSE    # campo -  lag de orden 1 
+palancas$lag2   <- FALSE
+palancas$delta2 <- FALSE
 palancas$lag3   <- FALSE
 palancas$delta3 <- FALSE
 palancas$lag4   <- FALSE
@@ -69,10 +69,10 @@ palancas$maximo6  <- FALSE
 palancas$ratiomax3   <- FALSE   #La idea de Daiana Sparta
 palancas$ratiomean6  <- FALSE   #Un derivado de la idea de Daiana Sparta
 
-palancas$tendencia6  <- TRUE    #Great power comes with great responsability
+palancas$tendencia6  <- FALSE    #Great power comes with great responsability
 
 
-palancas$canaritosimportancia  <- TRUE  #si me quedo solo con lo mas importante de canaritosimportancia
+palancas$canaritosimportancia  <- FALSE  #si me quedo solo con lo mas importante de canaritosimportancia
 
 #### nuevas palancas ranking
 ## INVERTIR PARA HACER LA VERSION CON VARIABLES ORIGINALES
@@ -610,19 +610,20 @@ CanaritosImportancia  <- function( dataset )
 }
 #------------------------------------------------------------------------------
 ## esta función rankea las variables. La uso para ambas palancas.
-rankear <- function ( variable ) { frank( variable, ties.method='average',  #los empatados tienen un ranking que es el promedio de sus posiciones.
-                                         na.last=TRUE) }
+rankear <- function ( variable ) { 
+    #los empatados tienen un ranking que es el promedio de sus posiciones.
+    return(frank(variable, ties.method='average', na.last=TRUE))
+}
 
 ## función que agrega rankings sin eliminar variables ori
-agregar_ranking  <- function( dataset ) { 
+agregar_ranking  <- function( dataset, cols_analiticas ) { 
   
   ## variables sobre las que aplico las transformaciones de ranking
-  cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
-  
-  dataset_ret = dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
+  #cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+  dataset_ranked = dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
            .SDcols= cols_analiticas,
            by= c("foto_mes")]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
-  return( dataset_ret )
+  return(dataset_ranked)
 }
 
 
@@ -631,10 +632,10 @@ agregar_ranking  <- function( dataset ) {
 
 ## funcion que pasa las variables ori a ranking
 
-pasar_a_ranking  <- function( dataset ) { 
+pasar_a_ranking  <- function( dataset, cols_analiticas ) { 
   
-  ## variables sobre las que aplico las transformaciones de ranking
-    cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+    ## variables sobre las que aplico las transformaciones de ranking
+    #cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
     
     dataset_ret = dataset[ , (cols_analiticas) := lapply(.SD, rankear), 
              .SDcols = cols_analiticas,
@@ -688,10 +689,11 @@ correr_todo  <- function( palancas )
   if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
 
   #agrego palancas de ranking
-
-  if ( palancas$solorankings ) pasar_a_ranking( dataset )
-  if ( palancas$oriandrankings ) agregar_ranking( dataset )
-  
+  cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+  if ( palancas$solorankings ) pasar_a_ranking( dataset, cols_analiticas )
+  if ( palancas$oriandrankings ){
+      dataset = agregar_ranking( dataset, cols_analiticas )
+  }
   ## por ultimo dejo la canaritos que selecciona las importantes
   if( palancas$canaritosimportancia )  CanaritosImportancia( dataset )
 
