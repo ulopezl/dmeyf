@@ -612,64 +612,59 @@ CanaritosImportancia  <- function( dataset )
 ## esta función rankea las variables. La uso para ambas palancas.
 rankear <- function ( variable ) { 
     #los empatados tienen un ranking que es el promedio de sus posiciones.
-    return(frank(variable, ties.method='average', na.last="keep")) #los que tienen NA los mantengo como NA
-}
-
-divide_by_uniques_length <- function ( variable ){
-  variable2 = variable / length(unique(variable))
-  return(variable2)
-}
+    variable = frank(variable, ties.method='min', na.last="keep")#los que tienen NA los mantengo como NA
+    variable = variable / length(variable) #normalizo
+    return( variable )
+    }
 
 ## función que agrega rankings sin eliminar variables ori
 agregar_ranking  <- function( dataset, cols_analiticas ) { 
   
   ## variables sobre las que aplico las transformaciones de ranking
-  cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+  #cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
   
   #rankea
   dataset_ranked = dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
            .SDcols= cols_analiticas,
            by= c("foto_mes")]  #agrupo por mes
   
-  # se queda con las rankeadas "-rank"
-  cols_rank = names(dataset_ranked)[names(dataset_ranked) %like% "-rank"]
-  
-  #divido por la cantidad de unicos en cada columna
-  dataset_ranked = dataset_ranked[ , cols_rank := lapply(.SD, divide_by_uniques_length), 
-                            .SDcols= cols_rank,
-                            by= c("foto_mes")]
-  #dataset_ranked = scale(dataset_ranked[ ,..cols_rank ]) #agrego el escalado del ranking
-  #dataset_ranked = minmaxScaling(dataset_ranked[ ,..cols_rank ]) #agrego el escalado del ranking
-  
   return(dataset_ranked)
 }
-divide_by_uniques_length(dataset_ranked$`cliente_antiguedad-rank`)
-View(dataset_ranked)
-View(dataset_ranked[ , ..cols_rank])
-dataset_ranked$`cliente_antiguedad-rank`
+
+#dataset_ranked = agregar_ranking(dataset, cols_analiticas)
+#View(dataset_ranked)
 #------------------------------------------------------------------------------
 
 ## funcion que pasa las variables ori a ranking
 
 pasar_a_ranking  <- function( dataset, cols_analiticas ) { 
   
-    ## variables sobre las que aplico las transformaciones de ranking
-    cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
-    
-    dataset_ret = dataset[ , (cols_analiticas) := lapply(.SD, rankear), 
-             .SDcols = cols_analiticas,
-             by = c("foto_mes") ]  #agrupo por mes y numero de cliente #los que tienen NA van ultimos) 
-    return( dataset_ret )
-  }
+  ## variables sobre las que aplico las transformaciones de ranking
+  #cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
   
+  #rankea
+  dataset_ranked = dataset[ , paste0(cols_analiticas, '-rank') := lapply(.SD, rankear), 
+                            .SDcols= cols_analiticas,
+                            by= c("foto_mes")]  #agrupo por mes
+  
+  cols_dataset_cut = c("numero_de_cliente","foto_mes","mes","clase_ternaria", names(dataset_ranked)[names(dataset_ranked) %like% "-rank"])
+
+  dataset_ranked_cut = dataset_ranked[ , ..cols_dataset_cut ]
+  
+  return(dataset_ranked_cut)
+}
+
+#cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
+#dataset_ranked = pasar_a_ranking(dataset, cols_analiticas = cols_analiticas)
+
 #------------------------------------------------------------------------------
 
   
 correr_todo  <- function( palancas )
 {
   #cargo el dataset ORIGINAL
-  dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
-  #dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
+  #dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+  dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
   
   setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 
@@ -705,14 +700,22 @@ correr_todo  <- function( palancas )
   if(palancas$ratiomean6) RatioMean( dataset, cols_analiticas, 6) #Derivado de la idea de Daiana Sparta
 
 
-  if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
+  #if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
 
   #agrego palancas de ranking
   cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
-  if ( palancas$solorankings ) pasar_a_ranking( dataset, cols_analiticas )
+  
+  if ( palancas$solorankings ) {
+    dataset = pasar_a_ranking( dataset, cols_analiticas )
+    }
+  
   if ( palancas$oriandrankings ){
       dataset = agregar_ranking( dataset, cols_analiticas )
   }
+  
+  #hacemos las tendencias de los rankings
+  if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
+  
   ## por ultimo dejo la canaritos que selecciona las importantes
   if( palancas$canaritosimportancia )  CanaritosImportancia( dataset )
 
