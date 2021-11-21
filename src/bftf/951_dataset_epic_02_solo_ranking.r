@@ -663,8 +663,8 @@ pasar_a_ranking  <- function( dataset, cols_analiticas ) {
 correr_todo  <- function( palancas )
 {
   #cargo el dataset ORIGINAL
-  #dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
-  dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
+  dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+  #dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
   
   setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 
