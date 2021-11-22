@@ -593,20 +593,22 @@ CanaritosImportancia  <- function( dataset )
   tb_importancia  <- lgb.importance( model= modelo )
   tb_importancia[  , pos := .I ]
   
-  fwrite( tb_importancia, file="./work/impo.txt",  , sep="\t" )
+  fwrite( tb_importancia, file="./work/impo.txt", sep="\t" )
   
   umbral  <- tb_importancia[ Feature %like% "canarito", median(pos) - sd(pos) ]
   col_inutiles  <- tb_importancia[ pos >= umbral | Feature %like% "canarito",  Feature ]
 
   for( col in col_inutiles )
   {
-    dataset[  ,  paste0(col) := NULL ]
+   dataset = dataset[  ,  paste0(col) := NULL ]
   }
 
   rm( dtrain, dvalid )
   gc()
 
   ReportarCampos( dataset )
+  
+  return(dataset)
 }
 #------------------------------------------------------------------------------
 ## esta función rankea las variables. La uso para ambas palancas.
@@ -717,7 +719,9 @@ correr_todo  <- function( palancas )
   if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
   
   ## por ultimo dejo la canaritos que selecciona las importantes
-  if( palancas$canaritosimportancia )  CanaritosImportancia( dataset )
+  if( palancas$canaritosimportancia )  {
+    dataset = CanaritosImportancia( dataset )
+    }
 
 
   #dejo la clase como ultimo campo
