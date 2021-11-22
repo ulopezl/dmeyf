@@ -34,20 +34,20 @@ setwd( directory.root )
 
 palancas  <- list()  #variable con las palancas para activar/desactivar
 
-palancas$version  <- "v951_exp2_ori_y_ranking"   #Muy importante, ir cambiando la version
+palancas$version  <- "v951_exp2_solo_ranking"   #Muy importante, ir cambiando la version
 
 palancas$variablesdrift  <- c()   #aqui van las columnas que se quieren eliminar
 
 palancas$corregir <-  TRUE    # TRUE o FALSE
 
-palancas$nuevasvars <-  FALSE  #si quiero hacer Feature Engineering manual
+palancas$nuevasvars <-  TRUE  #si quiero hacer Feature Engineering manual
 
 palancas$dummiesNA  <-  FALSE #La idea de Santiago Dellachiesa
 
-palancas$lag1   <- FALSE    #lag de orden 1
-palancas$delta1 <- FALSE    # campo -  lag de orden 1 
-palancas$lag2   <- FALSE
-palancas$delta2 <- FALSE
+palancas$lag1   <- TRUE    #lag de orden 1
+palancas$delta1 <- TRUE    # campo -  lag de orden 1 
+palancas$lag2   <- TRUE
+palancas$delta2 <- TRUE
 palancas$lag3   <- FALSE
 palancas$delta3 <- FALSE
 palancas$lag4   <- FALSE
@@ -69,15 +69,15 @@ palancas$maximo6  <- FALSE
 palancas$ratiomax3   <- FALSE   #La idea de Daiana Sparta
 palancas$ratiomean6  <- FALSE   #Un derivado de la idea de Daiana Sparta
 
-palancas$tendencia6  <- FALSE    #Great power comes with great responsability
+palancas$tendencia6  <- TRUE    #Great power comes with great responsability
 
 
-palancas$canaritosimportancia  <- FALSE  #si me quedo solo con lo mas importante de canaritosimportancia
+palancas$canaritosimportancia  <- TRUE  #si me quedo solo con lo mas importante de canaritosimportancia
 
 #### nuevas palancas ranking
 ## INVERTIR PARA HACER LA VERSION CON VARIABLES ORIGINALES
-palancas$solorankings <- FALSE
-palancas$oriandrankings <-TRUE
+palancas$solorankings <- TRUE
+palancas$oriandrankings <-FALSE
 
 #escribo para saber cuales fueron los parametros
 write_yaml(  palancas,  paste0( "./work/palanca_",  palancas$version  ,".yaml" ) )
@@ -663,8 +663,8 @@ pasar_a_ranking  <- function( dataset, cols_analiticas ) {
 correr_todo  <- function( palancas )
 {
   #cargo el dataset ORIGINAL
-  #dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
-  dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
+  dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+  #dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
   
   setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 

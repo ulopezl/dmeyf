@@ -40,14 +40,14 @@ palancas$variablesdrift  <- c()   #aqui van las columnas que se quieren eliminar
 
 palancas$corregir <-  TRUE    # TRUE o FALSE
 
-palancas$nuevasvars <-  FALSE  #si quiero hacer Feature Engineering manual
+palancas$nuevasvars <-  TRUE  #si quiero hacer Feature Engineering manual
 
 palancas$dummiesNA  <-  FALSE #La idea de Santiago Dellachiesa
 
-palancas$lag1   <- FALSE    #lag de orden 1
-palancas$delta1 <- FALSE    # campo -  lag de orden 1 
-palancas$lag2   <- FALSE
-palancas$delta2 <- FALSE
+palancas$lag1   <- TRUE    #lag de orden 1
+palancas$delta1 <- TRUE    # campo -  lag de orden 1 
+palancas$lag2   <- TRUE
+palancas$delta2 <- TRUE
 palancas$lag3   <- FALSE
 palancas$delta3 <- FALSE
 palancas$lag4   <- FALSE
@@ -69,10 +69,10 @@ palancas$maximo6  <- FALSE
 palancas$ratiomax3   <- FALSE   #La idea de Daiana Sparta
 palancas$ratiomean6  <- FALSE   #Un derivado de la idea de Daiana Sparta
 
-palancas$tendencia6  <- FALSE    #Great power comes with great responsability
+palancas$tendencia6  <- TRUE    #Great power comes with great responsability
 
 
-palancas$canaritosimportancia  <- FALSE  #si me quedo solo con lo mas importante de canaritosimportancia
+palancas$canaritosimportancia  <- TRUE  #si me quedo solo con lo mas importante de canaritosimportancia
 
 #### nuevas palancas ranking
 ## INVERTIR PARA HACER LA VERSION CON VARIABLES ORIGINALES
@@ -593,20 +593,22 @@ CanaritosImportancia  <- function( dataset )
   tb_importancia  <- lgb.importance( model= modelo )
   tb_importancia[  , pos := .I ]
   
-  fwrite( tb_importancia, file="./work/impo.txt",  , sep="\t" )
+  fwrite( tb_importancia, file=paste0("./work/impo_", palancas$version ,".txt"), sep="\t" )
   
   umbral  <- tb_importancia[ Feature %like% "canarito", median(pos) - sd(pos) ]
   col_inutiles  <- tb_importancia[ pos >= umbral | Feature %like% "canarito",  Feature ]
 
   for( col in col_inutiles )
   {
-    dataset[  ,  paste0(col) := NULL ]
+   dataset = dataset[  ,  paste0(col) := NULL ]
   }
 
   rm( dtrain, dvalid )
   gc()
 
   ReportarCampos( dataset )
+  
+  return(dataset)
 }
 #------------------------------------------------------------------------------
 ## esta función rankea las variables. La uso para ambas palancas.
@@ -663,8 +665,8 @@ pasar_a_ranking  <- function( dataset, cols_analiticas ) {
 correr_todo  <- function( palancas )
 {
   #cargo el dataset ORIGINAL
-  #dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
-  dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
+  dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+  #dataset <- fread("datasets_dataset_epic_RECORTADO_v951_PRUEBA_RECORTE.csv.gz", nrows = 2000)
   
   setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 
@@ -717,10 +719,12 @@ correr_todo  <- function( palancas )
   if( palancas$tendencia6 )  Tendencia( dataset, cols_analiticas)
   
   ## por ultimo dejo la canaritos que selecciona las importantes
-  if( palancas$canaritosimportancia )  CanaritosImportancia( dataset )
+  if( palancas$canaritosimportancia )  {
+    dataset = CanaritosImportancia( dataset )
+    }
 
 
-  #dejo la clase como ultimo campo
+  #dejo la clase como ultimo campo´
   nuevo_orden  <- c( setdiff( colnames( dataset ) , "clase_ternaria" ) , "clase_ternaria" )
   setcolorder( dataset, nuevo_orden )
 
