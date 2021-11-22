@@ -593,7 +593,7 @@ CanaritosImportancia  <- function( dataset )
   tb_importancia  <- lgb.importance( model= modelo )
   tb_importancia[  , pos := .I ]
   
-  fwrite( tb_importancia, file="./work/impo.txt", sep="\t" )
+  fwrite( tb_importancia, file=paste0("./work/impo_", palancas$version ,".txt"), sep="\t" )
   
   umbral  <- tb_importancia[ Feature %like% "canarito", median(pos) - sd(pos) ]
   col_inutiles  <- tb_importancia[ pos >= umbral | Feature %like% "canarito",  Feature ]
@@ -724,7 +724,7 @@ correr_todo  <- function( palancas )
     }
 
 
-  #dejo la clase como ultimo campo
+  #dejo la clase como ultimo campo´
   nuevo_orden  <- c( setdiff( colnames( dataset ) , "clase_ternaria" ) , "clase_ternaria" )
   setcolorder( dataset, nuevo_orden )
 
