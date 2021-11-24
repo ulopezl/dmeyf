@@ -3,6 +3,11 @@
 #256 GB de espacio en el disco local
 #8 vCPU
 
+#este codigo requiere cambiar como minimo:
+#kexperimento --> nro del experimento
+#nombre_archivo_bo --> valores de la bo
+#karch_dataset --> dataset de la bo
+
 #limpio la memoria
 rm( list=ls() )  #remove all objects
 gc()             #garbage collection
@@ -18,9 +23,24 @@ require("primes")  #para generar semillas
 directory.root <- "~/buckets/b1/"
 setwd( directory.root )
 
-kexperimento  <- 1003
+#carpeta del experimento de subsampling con variante 005
+kexperimento  <- 1018
+
+#leer archivo de ganancia
+
+#version nube
+nombre_archivo_bo = "E1018_961_epic_exp_04_subsampling_005_BOlog.txt" #poner el nombre del archivo de bo del experimento
+#nombre_archivo_bo = "ganancias005.txt"
+ruta_archivo_bo = paste0("./work/E", kexperimento, "/", nombre_archivo_bo)
+tabla_bo = fread(ruta_archivo_bo)
+
+#ordenamos decreciente el archivo de ganancias
+setorder(tabla_bo, -"ganancia")
+mejor_iter = tabla_bo[1 , ]
 
 kscript         <- "981_epic_semillerio"
+
+#dataset correspondiente a la bo
 karch_dataset   <- "./datasets/dataset_epic_v951_todas_los_lags_y_deltas.csv.gz"  #el dataset que voy a utilizar
 
 ktest_mes_hasta  <- 202011  #Esto es lo que uso para testing
@@ -122,15 +142,15 @@ param_basicos  <- list( objective= "binary",
 #Estos hiperparametros salieron de la optimizacion bayesiana del script 961
 #ganancia  7272500  ( sobre la mitad de 202011 )
 #hiperparametros encontrados en la iteracion bayesiana 56 de un total de 100 inteligentes
-param_ganadores  <- list( "learning_rate"= 0.0256331616260111, 
-                          "feature_fraction"= 0.756420287625422,
-                          "min_data_in_leaf"= 1174,
-                          "num_leaves"= 359,
-                          "num_iterations"= 658,
-                          "ratio_corte"= 0.0385336379536877,
-                          "lambda_l1"= 1.13903425573371,         
-                          "lambda_l2"= 191.638560631778,         
-                          "max_bin"= 106            
+param_ganadores  <- list( "learning_rate"= mejor_iter$learning_rate, 
+                          "feature_fraction"= mejor_iter$feature_fraction,
+                          "min_data_in_leaf"= mejor_iter$min_data_in_leaf,
+                          "num_leaves"= mejor_iter$num_leaves,
+                          "num_iterations"= mejor_iter$num_iterations,
+                          "ratio_corte"= mejor_iter$ratio_corte,
+                          "lambda_l1"= mejor_iter$lambda_l1,         
+                          "lambda_l2"= mejor_iter$lambda_l2,         
+                          "max_bin"= mejor_iter$max_bin            
                         )
 
 #junto ambas listas de parametros en una sola
