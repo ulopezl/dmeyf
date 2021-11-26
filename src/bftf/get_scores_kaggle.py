@@ -1,9 +1,9 @@
 import pandas as pd
 
-filename = 'DM EyF Segunda Kaggle.txt'
-first_split_by = 'E1006'
+filename = 'DM EyF Segunda Kaggle_exp2.txt'
+first_split_by = 'E1002'
 get_score_split = 'Message'
-experimento = 'E1006'
+experimento = 'E1002'
 output_filename = f'ganancias_kaggle_{experimento}.csv'
 with open(filename, 'r') as f:
     contents = f.read()
