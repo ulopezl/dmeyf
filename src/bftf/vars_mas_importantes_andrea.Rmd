@@ -1,0 +1,113 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+setwd("C:/Users/Sole/Documents/maestria dm/2c2021/eyf/" )  #establezco la carpeta donde voy a trabajar
+
+dataset  <- fread("./datasets/dataset_epic_simple_v008_div_mas_prod_con_var_andrea_y_profe.csv")
+vars = c("ctrx_quarter",
+"ctrx_quarter_prod_ccomisiones_otras",
+"ctrx_quarter_prod_mcaja_ahorro",
+"ccomisiones_mantenimiento_div_mpayroll",
+"ccomisiones_mantenimiento_div_cpayroll_trx",
+"mtarjeta_visa_consumo_prod_mcaja_ahorro",
+"ctarjeta_visa_transacciones_prod_mcaja_ahorro",
+"mcuentas_saldo",
+"deuda_prestamos",
+"mcaja_ahorro_prod_Visa_msaldototal",
+
+"Aconsumos_tarjeta_sum_mpayroll",
+"ctrx_quarter",
+"Amcuentas_saldo_sum_mpayroll",
+"Amonto_consumo_credito_sum_monto_transacciones",
+"Amonto_deuda_total",
+"ccomisiones_mantenimiento_div_mpayroll",
+"ccomisiones_mantenimiento_div_cpayroll_trx",
+"Visa_status",
+"mrentabilidad_annual",
+"ctrx_quarter_prod_mcaja_ahorro",
+
+"Aconsumos_tarjeta_sum_mpayroll",
+"Amonto_consumo_credito_sum_monto_transacciones",
+"Amcuentas_saldo_sum_mpayroll",
+"ctrx_quarter",
+"ctrx_quarter_prod_mcaja_ahorro",
+"ctrx_quarter_prod_ccomisiones_otras",
+"Actrx_quarter_prod_ctarjeta_transacciones",
+"ccomisiones_mantenimiento_div_cpayroll_trx",
+"ccomisiones_mantenimiento_div_mpayroll",
+"Amtarjeta_consumo_prod_mcaja_ahorro",
+
+"Aconsumos_tarjeta_sum_mpayroll",
+"Amonto_consumo_credito_sum_monto_transacciones",
+"ctrx_quarter_prod_mcaja_ahorro",
+"Amcuentas_saldo_sum_mpayroll",
+"ctrx_quarter_prod_ccomisiones_otras",
+"ctrx_quarter",
+"Actrx_quarter_prod_ctarjeta_transacciones",
+"ccomisiones_mantenimiento_div_cpayroll_trx",
+"ccomisiones_mantenimiento_div_mpayroll",
+"cpayroll_trx", 
+"numero_de_cliente", 
+"foto_mes", 
+"clase_ternaria")
+vars = unique(vars)
+length(vars)
+
+```
+```{r}
+#variables andrea
+dataset[ , Atotal_transacciones_credito := rowSums( cbind( ctarjeta_visa_transacciones,  ctarjeta_master_transacciones) ,na.rm=TRUE ) ]
+ dataset[ , Amonto_deuda_total:= rowSums( cbind( mprestamos_personales,  mprestamos_prendarios, mprestamos_hipotecarios) , na.rm=TRUE ) ]
+dataset[ , Acantidad_seguros := rowSums( cbind( cseguro_vida,  cseguro_auto, cseguro_vivienda, cseguro_accidentes_personales) , na.rm=TRUE ) ]
+dataset[ , Ampayroll_div_cpayrroll:= mpayroll  / cpayroll_trx ]
+dataset[ , Acantidad_comisiones := rowSums( cbind( ccomisiones_mantenimiento,  ccomisiones_otras) , na.rm=TRUE ) ]
+dataset[ , Amonto_comisiones := rowSums( cbind( mcomisiones_otras,  mcomisiones_mantenimiento) , na.rm=TRUE ) ]
+dataset[ , Acantidad_debitos_automaticos := rowSums( cbind( ccuenta_debitos_automaticos,  ctarjeta_visa_debitos_automaticos, ctarjeta_master_debitos_automaticos) , na.rm=TRUE ) ]
+dataset[ , Amonto_debitos_automaticos := rowSums( cbind( mcuenta_debitos_automaticos,  mttarjeta_visa_debitos_automaticos, mttarjeta_master_debitos_automaticos) , na.rm=TRUE ) ]
+dataset[ , Acantidad_consumos_tarjetas_cred := rowSums( cbind( Master_cconsumos,  Visa_cconsumos) , na.rm=TRUE ) ]
+dataset[ , Amonto_consumos_tarjetas_cred := rowSums( cbind( mtarjeta_visa_consumo,  mtarjeta_master_consumo) , na.rm=TRUE ) ]
+dataset[ , Alimite_compras := rowSums( cbind( Visa_mlimitecompra,  Master_mlimitecompra) , na.rm=TRUE ) ]
+dataset[ , Aconsumo_tarjeta_div_limite_compra := Amonto_consumos_tarjetas_cred / Alimite_compras ]
+dataset[ , Amonto_ganancia_banco := rowSums( cbind( mactivos_margen,  mpasivos_margen) , na.rm=TRUE ) ]
+dataset[ , Amcuentas_saldo_sum_mpayroll := rowSums( cbind( mcuentas_saldo,  mpayroll) , na.rm=TRUE ) ]
+dataset[ , Amonto_consumo_credito_sum_monto_transacciones := rowSums( cbind( Amonto_consumos_tarjetas_cred,  mautoservicio) , na.rm=TRUE ) ]
+dataset[ , Aconsumos_tarjeta_sum_mpayroll := rowSums( cbind( Amonto_consumos_tarjetas_cred,  mpayroll) , na.rm=TRUE ) ]
+
+############# divs y prods ##########
+dataset[ , Actrx_quarter_prod_cantidad_comisiones := Acantidad_comisiones  * ctrx_quarter ]
+dataset[ , Acantidad_comisiones_div_cpayroll_trx := Acantidad_comisiones  / cpayroll_trx ]
+dataset[ , Actarjeta_transacciones_prod_mcaja_ahorro := Atotal_transacciones_credito * mcaja_ahorro ]
+dataset[ , Actrx_quarter_prod_mtarjeta_consumo := ctrx_quarter * Amonto_consumos_tarjetas_cred ]
+dataset[ , Amtarjeta_consumo_prod_mcaja_ahorro := mcaja_ahorro * Amonto_consumos_tarjetas_cred ]                 
+dataset[ , Actrx_quarter_prod_ctarjeta_transacciones := ctrx_quarter * Atotal_transacciones_credito ]            
+dataset[ , Amcaja_ahorro_prod_ccomisiones := mcaja_ahorro * Acantidad_comisiones ]
+dataset[ , Amtarjeta_consumo_prod_ccomisiones := Amonto_consumos_tarjetas_cred * Acantidad_comisiones ]        
+dataset[ , Actarjeta_transacciones_prod_comisiones := Atotal_transacciones_credito * Acantidad_comisiones ]
+dataset[ , Accomisiones_div_ctarjeta_transacciones := Acantidad_comisiones / Atotal_transacciones_credito ]   
+```
+
+```{r}
+dataset = dataset[ , vars,  with=FALSE]
+
+```
+
+
+```{r}
+dapply= dataset[foto_mes == 202011, ]
+dataset = dataset[foto_mes==202009,  ]
+names(dataset)
+```
+
+```{r}
+fwrite( dataset,
+          file="C:/Users/Sole/Documents/maestria dm/2c2021/eyf/datasets/mas_importantes_todos_los_modelos_andrea_202009.csv",
+          sep= "," )
+
+fwrite( dapply,
+          file="C:/Users/Sole/Documents/maestria dm/2c2021/eyf/datasets/mas_importantes_todos_los_modelos_andrea_202011.csv",
+          sep= "," )
+```
+
