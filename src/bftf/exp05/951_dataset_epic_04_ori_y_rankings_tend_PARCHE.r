@@ -559,8 +559,8 @@ CanaritosImportancia  <- function( )
 #aqui empieza el programa
 
 #cargo el dataset ORIGINAL
-#dataset  <- fread( "./datasets/dataset_epic_v951_exp3_ori_y_ranking.csv.gz")
-dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
+dataset  <- fread( "./datasets/dataset_epic_v951_exp3_ori_y_ranking.csv.gz")
+#dataset  <- fread( "./datasetsOri/paquete_premium.csv.gz")
 
 setorder(  dataset, numero_de_cliente, foto_mes )  #ordeno el dataset
 
