@@ -381,7 +381,7 @@ particionar( dataset,  c(1,9), agrupa=c("foto_mes","clase_ternaria"), campo="sub
 dataset <-  dataset[  (clase01==1  | subsampling==1) ]
 gc()
 
-campos_buenos  <- setdiff( colnames(dataset), c("clase_ternaria","clase01", "fold", "train", "subsampling" ) )
+campos_buenos  <- setdiff( colnames(dataset), c("clase_ternaria","clase01", "fold", "train", "subsampling","clase01_tend6" ) )
 
 
 #undersampling para training
