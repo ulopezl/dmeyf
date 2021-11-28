@@ -22,7 +22,7 @@ setwd( directory.root )
 
 palancas  <- list()  #variable con las palancas para activar/desactivar
 
-palancas$version  <- "vidapropia_01_desde_ori_y_rank_tasas_y_tendymas_test"   #Muy importante, ir cambiando la version
+palancas$version  <- "vidapropia_01_desde_ori_y_rank_tasas_y_tendymas"   #Muy importante, ir cambiando la version
 
 palancas$variablesdrift  <- c()   #aqui van las columnas que se quieren eliminar
 
@@ -551,7 +551,6 @@ CanaritosImportancia  <- function( canaritos_ratio=0.2 )
 #cargo el dataset ORIGINAL
 #dataset  <- fread( "./datasets/dataset_epic_RECORTADO_v951_exp3_ori.csv.gz")
 dataset  <- fread( "./datasets/dataset_epic_v951_exp3_ori_y_ranking.csv.gz")
-dataset[,"clase01" := NULL]
 gc()
 
 
@@ -569,16 +568,6 @@ if( palancas$nuevasvars )  AgregarVariables( dataset )
 #--------------------------------------
 #Esta primera parte es muuuy  artesanal  y discutible  ya que hay multiples formas de hacerlo
 
-cols_analiticas  <- copy( setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") ) )
-if( palancas$tendenciaYmuchomas )  TendenciaYmuchomas( dataset, cols_analiticas)
-
-if( palancas$lag1 )   Lags(  cols_analiticas, 1, palancas$delta1 )
-
-#hay una cantidad muy grande de variables, no soporto la presion
-CanaritosImportancia( canaritos_ratio= 0.3 )
-# at ease !  https://www.youtube.com/watch?v=QhCISxbO7rg
-#--------------------------------------
-
 #Agrego tasas de vars imps
 # Agrgue las cols_imp del exprimento 3 con el dataset original
 # remuevo mvr_mpagospesos porque no quedo en el dataset de ori y rankings.
@@ -588,6 +577,16 @@ if( palancas$agregartasas){
   AgregarTasas(cols_imp)
   ReportarCampos(dataset)
 }
+
+cols_analiticas  <- copy( setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") ) )
+if( palancas$tendenciaYmuchomas )  TendenciaYmuchomas( dataset, cols_analiticas)
+
+if( palancas$lag1 )   Lags(  cols_analiticas, 1, palancas$delta1 )
+
+#hay una cantidad muy grande de variables, no soporto la presion
+CanaritosImportancia( canaritos_ratio= 0.3 )
+# at ease !  https://www.youtube.com/watch?v=QhCISxbO7rg
+#--------------------------------------
 
 #Agrego lags de orden 2
 cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )  
