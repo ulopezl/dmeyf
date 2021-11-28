@@ -367,7 +367,11 @@ dataset  <- dataset[ foto_mes >= kfecha_cutoff ]
 if ( ncol(dataset) > 450){
   importancias_to_filter = fread(importance_file)
   vars_imp = importancias_to_filter$Feature[!(importancias_to_filter$Feature %like% 'canarito')]
-  dataset = dataset[,vars_imp[1:450],with=FALSE]
+  vars_imp = vars_imp[1:450]
+  vars_no_filtrar = c("foto_mes", "clase_ternaria", "numero_de_cliente")
+  vars = c(vars_imp, vars_no_filtrar)
+  vars = unique(vars)
+  dataset = dataset[,vars, with=FALSE]
 }
 gc()
 setorder( dataset,  foto_mes, numero_de_cliente )
