@@ -22,13 +22,13 @@ setwd( directory.root )
 
 palancas  <- list()  #variable con las palancas para activar/desactivar
 
-palancas$version  <- "vidapropia_01_desde_ori_y_rank_andrea_y_tendymas_test"   #Muy importante, ir cambiando la version
+palancas$version  <- "vidapropia_01_desde_ori_y_rank_andrea_y_tendymas_V2"   #Muy importante, ir cambiando la version
 
 palancas$variablesdrift  <- c()   #aqui van las columnas que se quieren eliminar
 
 palancas$corregir <-  FALSE    # TRUE o FALSE
 
-palancas$nuevasvars <-  TRUE  #si quiero hacer Feature Engineering manual
+palancas$nuevasvars <-  FALSE  #si quiero hacer Feature Engineering manual
 
 palancas$dummiesNA  <-  FALSE #La idea de Santiago Dellachiesa
 
@@ -581,8 +581,9 @@ CanaritosImportancia  <- function( canaritos_ratio=0.2 )
 #Aqui empieza el programa
 
 #cargo el dataset ORIGINAL
-dataset  <- fread( "./datasets/dataset_epic_RECORTADO_v951_exp3_ori.csv.gz")
+#dataset  <- fread( "./datasets/dataset_epic_RECORTADO_v951_exp3_ori.csv.gz")
 #dataset  <- fread( "./datasets/dataset_epic_v951_exp3_ori_y_ranking.csv.gz")
+dataset  <- fread("./datasets/canaproxy_vidapropia_01_desde_ori_y_rank_andrea_y_tendymas_merged.csv.gz")
 #dataset[,"clase01" := NULL]
 gc()
 
@@ -624,27 +625,27 @@ if( palancas$agregartasas){
 #Agrego lags de orden 2
 cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )  
 if( palancas$lag2 )   Lags( cols_analiticas, 2, palancas$delta2 )
-CanaritosImportancia( canaritos_ratio= 0.1 )
+#CanaritosImportancia( canaritos_ratio= 0.1 )
 
 #Agrego lags de orden 3
 cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
 if( palancas$lag3 )   Lags( cols_analiticas, 3, palancas$delta3 )
-CanaritosImportancia( 0.3 )      # vuelvo a hacer lugar gracias a los canaritos
+#CanaritosImportancia( 0.3 )      # vuelvo a hacer lugar gracias a los canaritos
 
 #Agrego lags de orden 4
 cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
 if( palancas$lag4 )   Lags(  cols_analiticas, 4, palancas$delta4 )
-CanaritosImportancia( 0.3 )
+#CanaritosImportancia( 0.3 )
 
 #Agrego lags de orden 5
 cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
 if( palancas$lag5 )   Lags( cols_analiticas, 5, palancas$delta5 )
-CanaritosImportancia( 0.3 )
+#CanaritosImportancia( 0.3 )
 
 #Agrego lags de orden 6
 cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
 if( palancas$lag6 )   Lags( cols_analiticas, 6, palancas$delta6 )
-CanaritosImportancia( 0.3 )
+#CanaritosImportancia( 0.3 )
 
 
 #Ahora construyo patrones elaborados  https://www.youtube.com/watch?v=aLj8WCO-2QI
