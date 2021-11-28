@@ -25,14 +25,22 @@ kcantidad_semillas  <- 200
 #ATENCION
 #aqui deben ir los mejores valores que salieron de la optimizacion bayesiana
 x  <- list()
-x$gleaf_size   <- 91.646582
-x$gnum_leaves  <- 0.523681
-x$learning_rate <- 0.197907
-x$feature_fraction <- 0.999975
-x$max_bin  <- 210
-x$num_iterations  <- 3.0
-x$pos_ratio  <- 0.003942
+x$gleaf_size   <- 40.939378
+x$gnum_leaves  <- 0.355398
+x$learning_rate <- 0.179947
+x$feature_fraction <- 0.105038
+x$max_bin  <-  70
+x$num_iterations  <- 265.0
+x$pos_ratio  <-  0.034722
   
+# gleaf_size                     40.939378
+# gnum_leaves                     0.355398
+# learning_rate                   0.179947
+# feature_fraction                0.105038
+# max_bin                               70
+# num_iterations                     265.0
+# pos_ratio_actual                0.034647
+# pos_ratio_acum                  0.034722
 #------------------------------------------------------------------------------
 #Funcion que lleva el registro de los experimentos
 
