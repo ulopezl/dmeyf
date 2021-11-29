@@ -17,8 +17,8 @@ require("lightgbm")
 
 
 #defino la carpeta donde trabajo
-#directory.root  <-  "~/buckets/b1/"  #Google Cloud
-#setwd( directory.root )
+directory.root  <-  "~/buckets/b1/"  #Google Cloud
+setwd( directory.root )
 
 palancas  <- list()  #variable con las palancas para activar/desactivar
 
