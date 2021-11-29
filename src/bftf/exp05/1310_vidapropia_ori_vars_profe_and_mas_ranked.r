@@ -374,7 +374,7 @@ AgregarRanking  <- function( cols_to_rank ) {
   #cols_analiticas  <- setdiff( colnames(dataset),  c("numero_de_cliente","foto_mes","mes","clase_ternaria") )
   
   #rankea
-  dataset[ , paste0(cols_to_rank, '-rank') := lapply(.SD, rankear), 
+  dataset[ , paste0(cols_to_rank, '_rank') := lapply(.SD, rankear), 
            .SDcols= cols_to_rank,
            by= c("foto_mes")]  #agrupo por mes
   ReportarCampos( dataset )
